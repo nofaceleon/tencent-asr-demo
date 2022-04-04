@@ -1,5 +1,7 @@
 ### 腾讯asr异步实时语音识别接口测试demo
 
+#### 创建配置文件 config.toml
+
 #### 修改配置文件 config.toml,配置好secretId和secretKey
 
 ```toml
@@ -16,6 +18,12 @@ url = "http://127.0.0.1"
 # 识别结果保存文件名
 filename = "./notify.txt"
 
+```
+
+#### 编译
+
+```shell
+GOOS=linux GOARCH=amd64 go build -o asr_web_linux_amd64 main.go
 ```
 
 #### 启动

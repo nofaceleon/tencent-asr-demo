@@ -10,9 +10,3 @@ url = "http://127.0.0.1"
 # 识别结果文件名
 filename = "./notify.txt"
 file_row = "./notify_row.txt"
-
-#[app]
-## 识别引擎
-#EngineType = "16k_zh_video"
-## 拉流地址
-#Url = "rmtp://127.0.0.1:1935/live"
