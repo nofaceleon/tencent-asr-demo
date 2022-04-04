@@ -12,7 +12,7 @@ secretKey = ""
 [web]
 # web监听的端口号
 port = "8080"
-url = "http://124.223.90.160"
+url = "http://127.0.0.1"
 # 识别结果保存文件名
 filename = "./notify.txt"
 
