@@ -44,16 +44,13 @@ func WriteFile(filename string, content string) error {
 
 	//写入文件时，使用带缓存的 *Writer
 	write := bufio.NewWriter(file)
-	_, writeErr := write.WriteString(content)
-	if writeErr != nil {
-		return writeErr
+	if _, err := write.WriteString(content); err != nil {
+		return err
 
 	}
 	//Flush将缓存的文件真正写入到文件中
-	FlushErr := write.Flush()
-	if FlushErr != nil {
-		return FlushErr
+	if err := write.Flush(); err != nil {
+		return err
 	}
-
 	return nil
 }
