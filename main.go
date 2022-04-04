@@ -1,7 +1,7 @@
 package main
 
 import (
-	"asr/controller"
+	"asr/app/http/controller"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"

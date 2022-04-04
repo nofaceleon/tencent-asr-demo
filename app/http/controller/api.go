@@ -1,7 +1,8 @@
 package controller
 
 import (
-	"asr/pkg"
+	client2 "asr/pkg/client"
+	"asr/pkg/helper"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -33,7 +34,7 @@ type Res struct {
 var client *asr.Client
 
 func Initialize() {
-	client = pkg.GetClient()
+	client = client2.GetClient()
 }
 
 // Start 开始语音识别
@@ -79,7 +80,7 @@ func (i *IndexController) Start(ctx *gin.Context) {
 		return
 	}
 	fmt.Printf("%s", response.ToJsonString()+"\r\n")
-	ctx.JSON(200, pkg.JsonDecode(response.ToJsonString()))
+	ctx.JSON(200, helper.JsonDecode(response.ToJsonString()))
 }
 
 // Stop 停止语音识别
@@ -98,7 +99,7 @@ func (i *IndexController) Stop(ctx *gin.Context) {
 		return
 	}
 	fmt.Printf("%s", response.ToJsonString()+"\r\n")
-	ctx.JSON(200, pkg.JsonDecode(response.ToJsonString()))
+	ctx.JSON(200, helper.JsonDecode(response.ToJsonString()))
 	return
 
 }
@@ -115,7 +116,7 @@ func (i *IndexController) List(ctx *gin.Context) {
 		return
 	}
 	fmt.Printf("%s", response.ToJsonString()+"\r\n")
-	ctx.JSON(200, pkg.JsonDecode(response.ToJsonString()))
+	ctx.JSON(200, helper.JsonDecode(response.ToJsonString()))
 	return
 }
 
@@ -142,18 +143,18 @@ func (i *IndexController) Notify(ctx *gin.Context) {
 	}
 	filePath := viper.GetString("web.filename")
 	filePathRow := viper.GetString("web.file_row")
-	timeStr := pkg.ResolveTime(startTime)
+	timeStr := helper.ResolveTime(startTime)
 	jsonStr, _ := json.Marshal(reqInfo)
 
 	//保存原始数据
-	if err := pkg.WriteFile(filePathRow, string(jsonStr)+"\r\n"); err != nil {
+	if err := helper.WriteFile(filePathRow, string(jsonStr)+"\r\n"); err != nil {
 		ctx.JSON(500, gin.H{
 			"err": err.Error(),
 		})
 		return
 	}
 	//保存解析后的数据
-	if err := pkg.WriteFile(filePath, timeStr+"  "+text+"\r\n"); err != nil {
+	if err := helper.WriteFile(filePath, timeStr+"  "+text+"\r\n"); err != nil {
 		ctx.JSON(500, gin.H{
 			"err": err.Error(),
 		})
