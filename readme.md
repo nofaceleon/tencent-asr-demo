@@ -7,7 +7,6 @@
 ```toml
 [tx]
 endpoint = "asr.tencentcloudapi.com"
-# 腾讯后台的api密钥信息
 secretId = ""
 secretKey = ""
 
@@ -15,8 +14,10 @@ secretKey = ""
 # web监听的端口号
 port = "8080"
 url = "http://127.0.0.1"
-# 识别结果保存文件名
+# 识别结果文件保存路径
 filename = "./notify.txt"
+# 回调原始结果保存路径
+file_row = "./notify_row.txt"
 
 ```
 
