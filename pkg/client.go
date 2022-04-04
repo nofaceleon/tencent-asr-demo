@@ -8,10 +8,6 @@ import (
 )
 
 func GetClient() *asr.Client {
-	//credential := common.NewCredential(
-	//	"AKIDxjFVUChvtaeS0GFxOZT6RVIo31i8ICpB",
-	//	"5uTlmVxCArHQQAftqVu2tSklUw83h5KI",
-	//)
 	credential := common.NewCredential(
 		viper.GetString("tx.secretId"),
 		viper.GetString("tx.secretKey"),
