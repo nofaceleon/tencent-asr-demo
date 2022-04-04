@@ -2,7 +2,7 @@ package controller
 
 import (
 	"asr/pkg"
-	"bufio"
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cast"
@@ -10,7 +10,6 @@ import (
 	asr "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/asr/v20190614"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"net/http"
-	"os"
 )
 
 type IndexController struct {
@@ -120,11 +119,11 @@ func (i *IndexController) List(ctx *gin.Context) {
 	return
 }
 
-func (i *IndexController) Notify(context *gin.Context) {
+func (i *IndexController) Notify(ctx *gin.Context) {
 	//获取json数据
 	var reqInfo *NotifyData
-	if err := context.ShouldBindJSON(&reqInfo); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := ctx.ShouldBindJSON(&reqInfo); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -135,44 +134,32 @@ func (i *IndexController) Notify(context *gin.Context) {
 		startTime = reqInfo.Result[0].StartTime
 		text = reqInfo.Result[0].Text
 	} else {
-		context.JSON(200, gin.H{
+		ctx.JSON(200, gin.H{
 			"code": 1,
 			"msg":  "空数据",
 		})
 		return
 	}
 	filePath := viper.GetString("web.filename")
-	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
-	if err != nil {
-		context.JSON(200, gin.H{
-			"code": 1,
-			"msg":  "文件写入失败",
+	filePathRow := viper.GetString("web.file_row")
+	timeStr := pkg.ResolveTime(startTime)
+	jsonStr, _ := json.Marshal(reqInfo)
+
+	//保存原始数据
+	if err := pkg.WriteFile(filePathRow, string(jsonStr)+"\r\n"); err != nil {
+		ctx.JSON(500, gin.H{
+			"err": err.Error(),
 		})
 		return
 	}
-	//关闭文件
-	defer func(file *os.File) {
-		err := file.Close()
-		if err != nil {
-		}
-	}(file)
-
-	//写入文件时，使用带缓存的 *Writer
-	write := bufio.NewWriter(file)
-	timeStr := pkg.ResolveTime(startTime)
-	_, writeErr := write.WriteString(timeStr + "   " + text + "\r\n")
-	if writeErr != nil {
-		fmt.Println(writeErr.Error())
-		return
-
-	}
-	//Flush将缓存的文件真正写入到文件中
-	FlushErr := write.Flush()
-	if FlushErr != nil {
-		fmt.Println(FlushErr.Error())
+	//保存解析后的数据
+	if err := pkg.WriteFile(filePath, timeStr+"  "+text+"\r\n"); err != nil {
+		ctx.JSON(500, gin.H{
+			"err": err.Error(),
+		})
 		return
 	}
-	context.JSON(200, gin.H{
+	ctx.JSON(200, gin.H{
 		"code": 0,
 		"msg":  reqInfo.Result[0].Text,
 	})

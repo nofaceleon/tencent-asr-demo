@@ -13,6 +13,7 @@ func init() {
 	viper.SetConfigType("toml")
 	viper.AddConfigPath(".")
 	viper.SetDefault("web.filename", "./notify.txt")
+	viper.SetDefault("web.file_row", "./notify_row.txt")
 	viper.SetDefault("web.port", "8080")
 	configErr := viper.ReadInConfig() //读取配置
 	if configErr != nil {

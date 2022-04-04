@@ -1,8 +1,10 @@
 package pkg
 
 import (
+	"bufio"
 	"encoding/json"
-	"strconv"
+	"fmt"
+	"os"
 	"strings"
 )
 
@@ -22,7 +24,36 @@ func ResolveTime(seconds int) string {
 	hour := seconds / 3600
 	minute := (seconds - hour*3600) / 60
 	second := ((seconds - 3600*hour) - 60*minute) % 60
-	time := []string{strconv.Itoa(hour), strconv.Itoa(minute), strconv.Itoa(second)}
+	time := []string{fmt.Sprintf("%02d", hour), fmt.Sprintf("%02d", minute), fmt.Sprintf("%02d", second)}
 	timeStr := strings.Join(time, ":")
 	return timeStr
+}
+
+// WriteFile 数据写入文件
+func WriteFile(filename string, content string) error {
+	file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
+	if err != nil {
+		return err
+	}
+	//关闭文件
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+		}
+	}(file)
+
+	//写入文件时，使用带缓存的 *Writer
+	write := bufio.NewWriter(file)
+	_, writeErr := write.WriteString(content)
+	if writeErr != nil {
+		return writeErr
+
+	}
+	//Flush将缓存的文件真正写入到文件中
+	FlushErr := write.Flush()
+	if FlushErr != nil {
+		return FlushErr
+	}
+
+	return nil
 }
