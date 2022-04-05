@@ -49,14 +49,14 @@ func (i *IndexController) Start(ctx *gin.Context) {
 	Url = ctx.PostForm("url")
 
 	if len(EngineType) == 0 {
-		ctx.JSON(400, gin.H{
+		ctx.AbortWithStatusJSON(400, gin.H{
 			"err": "engine_type 参数不能为空",
 		})
 		return
 	}
 
 	if len(Url) == 0 {
-		ctx.JSON(400, gin.H{
+		ctx.AbortWithStatusJSON(400, gin.H{
 			"err": "url(拉流地址) 参数不能为空",
 		})
 		return
@@ -74,7 +74,7 @@ func (i *IndexController) Start(ctx *gin.Context) {
 	response, err := client.CreateAsyncRecognitionTask(request)
 
 	if err != nil {
-		ctx.JSON(400, gin.H{
+		ctx.AbortWithStatusJSON(400, gin.H{
 			"err": err,
 		})
 		return
@@ -93,7 +93,7 @@ func (i *IndexController) Stop(ctx *gin.Context) {
 	response, err := client.CloseAsyncRecognitionTask(request)
 
 	if err != nil {
-		ctx.JSON(400, gin.H{
+		ctx.AbortWithStatusJSON(400, gin.H{
 			"err": err,
 		})
 		return
@@ -110,7 +110,7 @@ func (i *IndexController) List(ctx *gin.Context) {
 	response, err := client.DescribeAsyncRecognitionTasks(request)
 
 	if err != nil {
-		ctx.JSON(400, gin.H{
+		ctx.AbortWithStatusJSON(400, gin.H{
 			"err": err,
 		})
 		return
@@ -124,7 +124,7 @@ func (i *IndexController) Notify(ctx *gin.Context) {
 	//获取json数据
 	var reqInfo *NotifyData
 	if err := ctx.ShouldBindJSON(&reqInfo); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -135,7 +135,7 @@ func (i *IndexController) Notify(ctx *gin.Context) {
 		startTime = reqInfo.Result[0].StartTime
 		text = reqInfo.Result[0].Text
 	} else {
-		ctx.JSON(200, gin.H{
+		ctx.AbortWithStatusJSON(200, gin.H{
 			"code": 1,
 			"msg":  "空数据",
 		})
@@ -148,14 +148,14 @@ func (i *IndexController) Notify(ctx *gin.Context) {
 
 	//保存原始数据
 	if err := helper.WriteFile(filePathRow, string(jsonStr)+"\r\n"); err != nil {
-		ctx.JSON(500, gin.H{
+		ctx.AbortWithStatusJSON(500, gin.H{
 			"err": err.Error(),
 		})
 		return
 	}
 	//保存解析后的数据
 	if err := helper.WriteFile(filePath, timeStr+"  "+text+"\r\n"); err != nil {
-		ctx.JSON(500, gin.H{
+		ctx.AbortWithStatusJSON(500, gin.H{
 			"err": err.Error(),
 		})
 		return
